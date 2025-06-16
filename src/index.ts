@@ -7,7 +7,8 @@ import {
 import {
   OutgoingMessageType,
   SupportedMessage as OutgoingSupportedMessage,
-} from "./messages/OutGoingMessages";
+} from "./messages/OutgoingMessages";
+
 import { UserManager } from "./store/UserManager";
 import { InMemoryStore } from "./InMemoryStore";
 
@@ -26,11 +27,6 @@ server.listen(8080, function () {
 
 const wsServer = new WebSocketServer({
   httpServer: server,
-  // You should not use autoAcceptConnections for production
-  // applications, as it defeats all standard cross-origin protection
-  // facilities built into the protocol and the browser.  You should
-  // *always* verify the connection's origin and decide whether or not
-  // to accept it.
   autoAcceptConnections: false,
 });
 
@@ -77,15 +73,25 @@ function messageHandler(ws: connection, message: IncomingMessageType) {
   if (message.type === SupportedMessage.JoinRoom) {
     const payload = message.payload;
     userManager.addUser(payload.name, payload.userId, payload.roomId, ws);
-  }
-
-  if (message.type === SupportedMessage.SendMessage) {
-    const payload = message.payload;
     const user = userManager.getUser(payload.userId, payload.roomId);
     if (!user) {
       console.error("User not found");
       return;
     }
+    console.log("Added User " + user?.id, user?.name);
+  }
+
+  if (message.type === SupportedMessage.SendMessage) {
+    const payload = message.payload;
+    console.log("Payload on send " + JSON.stringify(payload));
+    const user = userManager.getUser(payload.userId, payload.roomId);
+
+    if (!user) {
+      console.error("User not found");
+      return;
+    }
+
+    console.log("USER FOUND ON SEND_MESSAGE");
     const chat = store.addchat(
       payload.userId,
       user.name,
@@ -97,6 +103,7 @@ function messageHandler(ws: connection, message: IncomingMessageType) {
     const outgoingPayload: OutgoingMessageType = {
       type: OutgoingSupportedMessage.AddChat,
       payload: {
+        userId: user.id,
         chatId: chat?.id,
         roomId: payload.roomId,
         message: payload.message,

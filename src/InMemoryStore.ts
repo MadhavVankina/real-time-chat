@@ -2,6 +2,7 @@ import { Chat, Store, UserId } from "./store/Store";
 
 let globalChatId = 0;
 
+
 export interface Room {
   roomId: string;
   chats: Chat[];
@@ -33,6 +34,10 @@ export class InMemoryStore implements Store {
   }
 
   addchat(userId: UserId, name: string, roomid: string, message: string) {
+    if (!this.store.get(roomid)) {
+      this.initRoom(roomid);
+    }
+
     const room = this.store.get(roomid);
     if (!room) return null;
 

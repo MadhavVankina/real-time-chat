@@ -5,6 +5,7 @@ export enum SupportedMessage {
 }
 
 type AddChatType = {
+  userId: string;
   roomId: String;
   message: string;
   name: string;

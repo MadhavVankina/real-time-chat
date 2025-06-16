@@ -108,6 +108,11 @@
 
     /* Completeness */
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+    "skipLibCheck": true                              /* Skip type checking all .d.ts files. */
+  },
+  "exclude": [
+    "node_modules",         // Always a good idea to exclude this
+    "**/*.spec.ts",         // Excludes all test files ending in .spec.ts
+    "frontend"            // <-- This will ignore the 'legacy' folder inside 'src'
+  ]
 }
